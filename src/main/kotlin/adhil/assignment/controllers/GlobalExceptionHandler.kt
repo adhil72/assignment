@@ -15,8 +15,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleException(ex: Exception): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now().toString(),
             message = ex.message?: "Internal Server Error",
+            failed = true
         )
         TableExceptions().insertException(errorResponse.message,ex.stackTraceToString())
         return ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR)

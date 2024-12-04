@@ -18,8 +18,8 @@ class InvalidCredentialsException(override val message: String): Exception(messa
     }
 }
 
-class EmailNotVerifiedException(override val message: String): Exception(message) {
+class EmailVerificationException(override val message: String): Exception(message) {
     override fun toString(): String {
-        return "EmailNotVerifiedException: $message"
+        return "EmailVerificationException: $message"
     }
 }

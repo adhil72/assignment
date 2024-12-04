@@ -78,6 +78,19 @@ class TableUser {
         return null
     }
 
+    fun isVerified(email: String): Boolean {
+        val querySQL = "SELECT verified FROM users WHERE email = ?;"
+        connection.prepareStatement(querySQL).use { statement ->
+            statement.setString(1, email)
+            val resultSet = statement.executeQuery()
+            return if (resultSet.next()) {
+                resultSet.getBoolean("verified")
+            } else {
+                false
+            }
+        }
+    }
+
     private fun mapResultSetToUser(resultSet: ResultSet): User {
         return User(
             id = resultSet.getString("id"),

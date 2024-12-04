@@ -21,7 +21,7 @@ class DbConfig {
         }
 
         private fun dropAllTables() {
-            val tables = listOf("access_tokens", "exceptions", "users","verification") // Add all your table names here
+            val tables = listOf("access_tokens", "exceptions", "users","verification")
             for (table in tables) {
                 dropTable(table)
             }
@@ -30,7 +30,7 @@ class DbConfig {
         fun connect(): Connection? {
             return try {
                 connection = DriverManager.getConnection(URL)
-                dropAllTables()
+//                dropAllTables()
                 connection
             } catch (e: SQLException) {
                 println("Connection failed: ${e.message}")
