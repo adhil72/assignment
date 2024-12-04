@@ -27,6 +27,13 @@ class TableAccessToken {
         return id
     }
 
+    fun getUserId(id: String): String {
+        val statement = connection.createStatement()
+        val resultSet = statement.executeQuery("SELECT user_id FROM access_tokens WHERE id = '$id'")
+        resultSet.next()
+        return resultSet.getString("user_id")
+    }
+
     fun exists(id: String): Boolean {
         val statement = connection.createStatement()
         val resultSet = statement.executeQuery("SELECT * FROM access_tokens WHERE id = '$id'")
@@ -39,5 +46,15 @@ class TableAccessToken {
         resultSet.next()
         val expiryDate = resultSet.getTimestamp("expiry_date").toLocalDateTime()
         return expiryDate.isBefore(LocalDateTime.now())
+    }
+
+    fun validateToken(token: String): String {
+        if (!exists(token)) {
+            throw Exception("Invalid token.")
+        }
+        if (isExpired(token)) {
+            throw Exception("Expired token.")
+        }
+        return getUserId(token)
     }
 }
