@@ -8,15 +8,17 @@ import adhil.assignment.modals.Course
 import adhil.assignment.tables.TableCourses
 
 class CourseService {
-    fun createCourse(createCourseRequest: CreateCourseRequest):CreateCourseResponse {
+    fun createCourse(createCourseRequest: CreateCourseRequest, createdBy:String):CreateCourseResponse {
         return TableCourses().insertCourse(Course(
             title = createCourseRequest.title,
             description = createCourseRequest.description,
-            price = createCourseRequest.price
+            price = createCourseRequest.price,
+            createdBy = createdBy
         ))
     }
 
     fun getAllCourses(getCourseRequest: GetCourseRequest): GetCoursesResponse {
         return TableCourses().getAllCourses(getCourseRequest)
     }
+
 }

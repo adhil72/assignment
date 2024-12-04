@@ -16,7 +16,8 @@ class TableCourses {
                 title VARCHAR(255) NOT NULL,
                 description TEXT NOT NULL,
                 price DECIMAL(10,2) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                created_by VARCHAR(255) NOT NULL,
             )
         """.trimIndent()
         connection.createStatement().execute(sql)
@@ -24,12 +25,13 @@ class TableCourses {
 
     fun insertCourse(course: Course):CreateCourseResponse {
         val sql = """
-            INSERT INTO courses (title, description, price) VALUES (?, ?, ?)
+            INSERT INTO courses (title, description, price, created_by) VALUES (?, ?, ?, ?)
         """.trimIndent()
         val preparedStatement = connection.prepareStatement(sql)
         preparedStatement.setString(1, course.title)
         preparedStatement.setString(2, course.description)
         preparedStatement.setDouble(3, course.price)
+        preparedStatement.setString(4, course.createdBy)
         preparedStatement.executeUpdate()
         return CreateCourseResponse(data = course)
     }
@@ -50,7 +52,8 @@ class TableCourses {
                     title = resultSet.getString("title"),
                     description = resultSet.getString("description"),
                     price = resultSet.getDouble("price"),
-                    createdAt = resultSet.getString("created_at")
+                    createdAt = resultSet.getString("created_at"),
+                    createdBy = null
                 )
             )
         }

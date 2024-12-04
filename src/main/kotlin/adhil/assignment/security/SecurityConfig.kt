@@ -1,5 +1,6 @@
 package adhil.assignment.security
 
+import adhil.assignment.config.AppConfig
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -14,9 +15,8 @@ open class SecurityConfig {
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         println("Security filter chain")
         http.csrf().disable().authorizeHttpRequests { auth ->
-                auth.requestMatchers(
-                    *PublicRoutes().publicRoutes.map { AntPathRequestMatcher(it) }.toTypedArray()
-                ).permitAll().anyRequest().authenticated()
+                auth.requestMatchers(AntPathRequestMatcher("${AppConfig.BASE_PATH}/**")).permitAll()
+                .anyRequest().authenticated()
             }.httpBasic()
         return http.build()
     }

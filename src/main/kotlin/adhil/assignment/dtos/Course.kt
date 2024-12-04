@@ -22,3 +22,9 @@ data class GetCoursesResponse(
     val data: List<Course>,
     val totalPages: Int = 1
 )
+
+data class GetCreatorCoursesRequest(
+    val page: Int = 1,
+    val limit: Int = 10,
+    val creatorId: String
+)

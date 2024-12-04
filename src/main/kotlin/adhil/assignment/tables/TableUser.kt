@@ -100,4 +100,16 @@ class TableUser {
             verified = resultSet.getBoolean("verified")
         )
     }
+
+    fun getUserById(id:String): User {
+        val querySQL = "SELECT * FROM users WHERE id = ?;"
+        connection.prepareStatement(querySQL).use { statement ->
+            statement.setString(1, id)
+            val resultSet = statement.executeQuery()
+            if (resultSet.next()) {
+                return mapResultSetToUser(resultSet)
+            }
+        }
+        throw Exception("User not found")
+    }
 }

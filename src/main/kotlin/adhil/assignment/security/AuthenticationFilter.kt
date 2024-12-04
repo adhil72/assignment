@@ -24,8 +24,12 @@ open class AuthenticationFilter: OncePerRequestFilter() {
         if (token != null && token.startsWith("Bearer ")) {
             try {
                 token = token.substring(7)
-                val uid = TableAccessToken().validateToken(token)
-                request.setAttribute("uid", uid)
+                val user = TableAccessToken().validateToken(token)
+                request.setAttribute("uid", user.id)
+                request.setAttribute("email", user.email)
+                request.setAttribute("role", user.role)
+                request.setAttribute("verified", user.verified)
+                filterChain.doFilter(request, response)
             } catch (e: Exception) {
                 response.status = HttpServletResponse.SC_UNAUTHORIZED
                 response.writer.write("Invalid or expired token.")

@@ -1,6 +1,7 @@
 package adhil.assignment.tables
 
 import adhil.assignment.config.DbConfig
+import adhil.assignment.modals.User
 import adhil.assignment.utils.timestamp
 import java.time.LocalDateTime
 import java.util.*
@@ -48,13 +49,14 @@ class TableAccessToken {
         return expiryDate.isBefore(LocalDateTime.now())
     }
 
-    fun validateToken(token: String): String {
+    fun validateToken(token: String): User {
         if (!exists(token)) {
             throw Exception("Invalid token.")
         }
         if (isExpired(token)) {
             throw Exception("Expired token.")
         }
-        return getUserId(token)
+        val uid = getUserId(token)
+        return TableUser().getUserById(uid)
     }
 }
