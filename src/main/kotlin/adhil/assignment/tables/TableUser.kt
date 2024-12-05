@@ -197,5 +197,15 @@ class TableUser {
         }
     }
 
+    fun getUserCourses(userId: String): List<String> {
+        val querySQL = "SELECT courses FROM users WHERE id = ?;"
+        connection.prepareStatement(querySQL).use { statement ->
+            statement.setString(1, userId)
+            val resultSet = statement.executeQuery()
+            resultSet.next()
+            return resultSet.getString("courses").split(",")
+        }
+    }
+
 
 }

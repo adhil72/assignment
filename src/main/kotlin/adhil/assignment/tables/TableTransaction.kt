@@ -40,29 +40,12 @@ class TableTransaction {
         return resultSet.getInt(1)
     }
 
-    fun getRevenueByCreator(userId: String, startDate: String, endDate: String): Int {
-        return try {
-            val courses = TableCourses().getCreatorCourses(userId).data
-            val courseIds = courses.map { it.id }
-            if (courseIds.isEmpty()) {
-                return 0
-            }
-            val placeholders = courseIds.joinToString(",") { "?" }
-            val sql = """
-            SELECT SUM(amount) FROM transactions WHERE order_id IN (SELECT id FROM orders WHERE course_id IN ($placeholders)) AND created_at BETWEEN ? AND ?
-        """.trimIndent()
-            val preparedStatement = connection.prepareStatement(sql)
-            courseIds.forEachIndexed { index, courseId ->
-                preparedStatement.setString(index + 1, courseId)
-            }
-            preparedStatement.setString(courseIds.size + 1, startDate)
-            preparedStatement.setString(courseIds.size + 2, endDate)
-            val resultSet = preparedStatement.executeQuery()
-            resultSet.next()
-            resultSet.getInt(1)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            0
+    fun getRevenueByCreator(userId: String, startDate: String, endDate: String): Double {
+        val courses = TableCourses().getCreatorCourses(userId).data
+        var revenue = 0.0
+        courses.forEach {
+            revenue+= it.price*it.orderCount
         }
+        return revenue
     }
 }

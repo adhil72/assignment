@@ -21,7 +21,7 @@ data class GetStatisticsAdminResponse(
 data class GetStatisticsCreatorResponse(
     val totalOrders: Int,
     val totalCourses: Int,
-    val totalRevenue: Int,
+    val totalRevenue: Double,
 )
 
 data class GetStatisticsCustomerResponse(

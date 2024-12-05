@@ -32,12 +32,6 @@ class OrderController {
     @GetMapping("/payment/callback")
     fun paymentSuccess(@RequestParam orderId: String, @RequestParam success:Boolean): PaymentResponse {
         println("Payment Callback : $orderId, $success")
-        if (success){
-            OrderService().paymentSuccess(orderId)
-            return PaymentResponse("Payment Successful")
-        }else{
-            OrderService().paymentFailure(orderId)
-            return PaymentResponse("Payment Failed")
-        }
+        return OrderService().paymentCallback(orderId,success)
     }
 }

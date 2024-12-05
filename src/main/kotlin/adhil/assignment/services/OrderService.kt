@@ -5,6 +5,8 @@ import adhil.assignment.config.AppConfig
 import adhil.assignment.dtos.CreateOrderResponse
 import adhil.assignment.dtos.GetOrderRequest
 import adhil.assignment.dtos.GetOrdersResponse
+import adhil.assignment.dtos.PaymentResponse
+import adhil.assignment.exceptions.OrderException
 import adhil.assignment.modals.Order
 import adhil.assignment.modals.Transaction
 import adhil.assignment.tables.TableCourses
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletRequest
 class OrderService {
     fun createCourseOrder(request: HttpServletRequest, courseId: String): CreateOrderResponse {
         val userId = request.getAttribute("uid") as String
+        val userCourses = TableUser().getUserCourses(userId)
+        if (userCourses.contains(courseId)) throw OrderException("User already has this course")
         val order = TableOrder().insertOrder(
             Order(
                 courseId = courseId, userId = userId, id = UUID.randomUUID().toString(), paymentStatus = false
@@ -25,21 +29,31 @@ class OrderService {
         return CreateOrderResponse(data = order, callbackUrl = callbackUrl)
     }
 
-    fun paymentSuccess(orderId: String):String{
+    fun paymentCallback(orderId: String, success: Boolean): PaymentResponse {
         val order = TableOrder().getOrder(orderId)
+        if (!order.processing) throw OrderException("Order already processed")
+        return if (success) {
+            paymentSuccess(order)
+            PaymentResponse("Payment verified")
+        } else {
+            paymentFailure(order)
+            PaymentResponse("Payment failed")
+        }
+    }
+
+    fun paymentSuccess(order: Order):String{
         TableOrder().updateOrder(order.copy(paymentStatus = true, processing = false))
         TableUser().addCourse(order.courseId,order.userId)
         TableCourses().incrementCourseBuyCount(order.courseId)
         TableTransaction().insertTransaction(Transaction(
-            orderId = orderId,
+            orderId = order.id,
             amount = 100,
             status = "success"
         ))
         return "Payment Successful"
     }
 
-    fun paymentFailure(orderId: String):String{
-        val order = TableOrder().getOrder(orderId)
+    fun paymentFailure(order: Order):String{
         TableOrder().updateOrder(order.copy(paymentStatus = false, processing = false))
         return "Payment Failed"
     }

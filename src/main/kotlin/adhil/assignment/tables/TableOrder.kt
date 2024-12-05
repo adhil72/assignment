@@ -93,6 +93,7 @@ class TableOrder {
             courseId = resultSet.getString("course_id"),
             userId = resultSet.getString("user_id"),
             paymentStatus = resultSet.getBoolean("payment_status"),
+            processing = resultSet.getBoolean("processing_status"),
             createdAt = resultSet.getTimestamp("created_at").toLocalDateTime()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         )
