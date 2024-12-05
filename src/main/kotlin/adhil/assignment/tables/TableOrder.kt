@@ -65,12 +65,15 @@ class TableOrder {
                     courseId = resultSet.getString("course_id"),
                     userId = resultSet.getString("user_id"),
                     paymentStatus = resultSet.getBoolean("payment_status"),
-                    createdAt = resultSet.getTimestamp("created_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                    createdAt = resultSet.getTimestamp("created_at").toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    processing = resultSet.getBoolean("processing_status")
                 )
             )
         }
 
-        val totalCount = connection.createStatement().executeQuery("SELECT COUNT(*) FROM orders WHERE user_id = '$userId'").getInt(1)
+        val totalCount =
+            connection.createStatement().executeQuery("SELECT COUNT(*) FROM orders WHERE user_id = '$userId'").getInt(1)
         val totalPages = if (totalCount % limit == 0) totalCount / limit else totalCount / limit + 1
         return GetOrdersResponse(orders, totalPages)
     }
@@ -88,19 +91,20 @@ class TableOrder {
             courseId = resultSet.getString("course_id"),
             userId = resultSet.getString("user_id"),
             paymentStatus = resultSet.getBoolean("payment_status"),
-            createdAt = resultSet.getTimestamp("created_at").toLocalDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+            createdAt = resultSet.getTimestamp("created_at").toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         )
     }
 
     fun updateOrder(newOrder: Order) {
+        println("updating order : $newOrder")
         val sql = """
-            UPDATE orders SET course_id = ?, user_id = ?, payment_status = ? WHERE id = ?
-        """.trimIndent()
+        UPDATE orders SET payment_status = ?, processing_status = ? WHERE id = ?
+    """.trimIndent()
         val preparedStatement = connection.prepareStatement(sql)
-        preparedStatement.setString(1, newOrder.courseId)
-        preparedStatement.setString(2, newOrder.userId)
-        preparedStatement.setBoolean(3, newOrder.paymentStatus)
-        preparedStatement.setString(4, newOrder.id)
+        preparedStatement.setBoolean(1, newOrder.paymentStatus)
+        preparedStatement.setBoolean(2, newOrder.processing)
+        preparedStatement.setString(3, newOrder.id)
         preparedStatement.executeUpdate()
     }
 }

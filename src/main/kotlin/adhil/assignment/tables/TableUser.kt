@@ -115,8 +115,8 @@ class TableUser {
         throw Exception("User not found")
     }
 
-    fun addCourse(courseId: String) {
-        val user = getUserById("1")
+    fun addCourse(courseId: String, userId:String) {
+        val user = getUserById(userId)
         val courses = user.courses.split(",").toMutableList()
         courses.add(courseId)
         val updateSQL = "UPDATE users SET courses = ? WHERE id = ?;"

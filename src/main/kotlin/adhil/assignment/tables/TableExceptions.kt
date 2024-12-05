@@ -1,7 +1,9 @@
 package adhil.assignment.tables
 
 import adhil.assignment.config.DbConfig
+import adhil.assignment.utils.timestamp
 import java.time.LocalDateTime
+import java.util.UUID
 
 class TableExceptions {
     val connection = DbConfig.connection
@@ -30,7 +32,7 @@ class TableExceptions {
         statement.execute(
             """
             INSERT INTO exceptions (id, message, stack_trace, created_at) 
-            VALUES ('${System.currentTimeMillis()}', '$message', '$stackTrace', '${createdAt}')
+            VALUES ('${UUID.randomUUID()}', '$message', '$stackTrace', '${timestamp(createdAt)}')
             """.trimIndent()
         )
     }

@@ -18,14 +18,14 @@ class OrderService {
                 courseId = courseId, userId = userId, id = UUID.randomUUID().toString(), paymentStatus = false
             )
         )
-        val callbackUrl = "${AppConfig.BASE_PATH}/order/payment/callback?order=${order.id}?success=<TRUE_OR_FALSE>"
+        val callbackUrl = "${AppConfig.BASE_PATH}/order/payment/callback?orderId=${order.id}&success=<TRUE_OR_FALSE>"
         return CreateOrderResponse(data = order, callbackUrl = callbackUrl)
     }
 
     fun paymentSuccess(orderId: String):String{
         val order = TableOrder().getOrder(orderId)
         TableOrder().updateOrder(order.copy(paymentStatus = true, processing = false))
-        TableUser().addCourse(order.courseId)
+        TableUser().addCourse(order.courseId,order.userId)
         return "Payment Successful"
     }
 

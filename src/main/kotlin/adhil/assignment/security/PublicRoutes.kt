@@ -9,8 +9,7 @@ class PublicRoutes {
         AppConfig.BASE_PATH + "/user/signup",
         AppConfig.BASE_PATH + "/user/verify",
         AppConfig.BASE_PATH + "/user/resend-verification",
-        AppConfig.BASE_PATH + "/order/payment/success",
-        AppConfig.BASE_PATH + "/order/payment/failure"
+        AppConfig.BASE_PATH + "/order/payment/callback"
     )
 
     fun isPublicRoute(path: String): Boolean {
