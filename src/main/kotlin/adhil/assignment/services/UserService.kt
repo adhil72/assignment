@@ -32,7 +32,7 @@ class UserService {
 
         val verify = TableVerification().createVerification(signupRequest.email)
         println("Email verification link: ${AppConfig.BASE_URL}${AppConfig.BASE_PATH}/user/verify?id=${verify.id}&email=${verify.email}")
-        return SignUpResponse()
+        return SignUpResponse("user created successfully Email verification link: ${AppConfig.BASE_URL}${AppConfig.BASE_PATH}/user/verify?id=${verify.id}&email=${verify.email}")
     }
 
     fun resendVerification(email: String): ResendVerificationResponse {
@@ -62,4 +62,3 @@ class UserService {
         return TableUser().getUsers(page, limit, search)
     }
 }
-
