@@ -6,9 +6,14 @@ import adhil.assignment.dtos.CreateOrderResponse
 import adhil.assignment.dtos.GetOrderRequest
 import adhil.assignment.dtos.GetOrdersResponse
 import adhil.assignment.modals.Order
+import adhil.assignment.modals.Transaction
+import adhil.assignment.tables.TableTransaction
 import adhil.assignment.tables.TableUser
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.servlet.http.HttpServletRequest
+import kotlin.math.truncate
 
 class OrderService {
     fun createCourseOrder(request: HttpServletRequest, courseId: String): CreateOrderResponse {
@@ -26,6 +31,11 @@ class OrderService {
         val order = TableOrder().getOrder(orderId)
         TableOrder().updateOrder(order.copy(paymentStatus = true, processing = false))
         TableUser().addCourse(order.courseId,order.userId)
+        TableTransaction().insertTransaction(Transaction(
+            orderId = orderId,
+            amount = 100,
+            status = "success"
+        ))
         return "Payment Successful"
     }
 

@@ -137,5 +137,14 @@ class TableCourses {
         return GetCoursesResponse(courses, totalPages)
     }
 
+    fun getCoursesCount(startDate: String, endDate: String): Int {
+        val sql = """
+            SELECT COUNT(*) as total FROM courses WHERE created_at BETWEEN ? AND ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, startDate)
+        preparedStatement.setString(2, endDate)
+        return preparedStatement.executeQuery().getInt("total")
+    }
 
 }

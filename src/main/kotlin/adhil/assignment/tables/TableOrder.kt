@@ -107,4 +107,29 @@ class TableOrder {
         preparedStatement.setString(3, newOrder.id)
         preparedStatement.executeUpdate()
     }
+
+    fun getOrdersCount(startDate: String, endDate: String):Int {
+        val sql = """
+            SELECT * FROM orders WHERE created_at BETWEEN ? AND ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, startDate)
+        preparedStatement.setString(2, endDate)
+        val resultSet = preparedStatement.executeQuery()
+        val orders = mutableListOf<Order>()
+        while (resultSet.next()) {
+            orders.add(
+                Order(
+                    id = resultSet.getString("id"),
+                    courseId = resultSet.getString("course_id"),
+                    userId = resultSet.getString("user_id"),
+                    paymentStatus = resultSet.getBoolean("payment_status"),
+                    createdAt = resultSet.getTimestamp("created_at").toLocalDateTime()
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                    processing = resultSet.getBoolean("processing_status")
+                )
+            )
+        }
+        return orders.size
+    }
 }

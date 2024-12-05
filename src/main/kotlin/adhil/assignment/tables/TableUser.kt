@@ -172,4 +172,28 @@ class TableUser {
             return GetUsersResponse(data = users, totalPages = totalPages)
         }
     }
+
+    fun getCreatorsCount(startDate: String, endDate: String): Int {
+        val querySQL = "SELECT COUNT(*) FROM users WHERE role = 'creator' AND created_at BETWEEN ? AND ?;"
+        connection.prepareStatement(querySQL).use { statement ->
+            statement.setString(1, startDate)
+            statement.setString(2, endDate)
+            val resultSet = statement.executeQuery()
+            resultSet.next()
+            return resultSet.getInt(1)
+        }
+    }
+
+    fun getCustomersCount(startDate: String, endDate: String): Int {
+        val querySQL = "SELECT COUNT(*) FROM users WHERE role = 'customer' AND created_at BETWEEN ? AND ?;"
+        connection.prepareStatement(querySQL).use { statement ->
+            statement.setString(1, startDate)
+            statement.setString(2, endDate)
+            val resultSet = statement.executeQuery()
+            resultSet.next()
+            return resultSet.getInt(1)
+        }
+    }
+
+
 }
