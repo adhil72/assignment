@@ -1,6 +1,7 @@
 package adhil.assignment.tables
 
 import adhil.assignment.config.DbConfig
+import adhil.assignment.dtos.GetUsersResponse
 import adhil.assignment.modals.User
 import java.sql.Connection
 import java.sql.ResultSet
@@ -102,7 +103,7 @@ class TableUser {
         )
     }
 
-    fun getUserById(id:String): User {
+    fun getUserById(id: String): User {
         val querySQL = "SELECT * FROM users WHERE id = ?;"
         connection.prepareStatement(querySQL).use { statement ->
             statement.setString(1, id)
@@ -123,6 +124,52 @@ class TableUser {
             statement.setString(1, courses.joinToString(","))
             statement.setString(2, "1")
             statement.executeUpdate()
+        }
+    }
+
+    fun getUsers(page: Int, limit: Int, search: String?): GetUsersResponse {
+        val querySQL = if (search.isNullOrEmpty()) {
+            "SELECT * FROM users LIMIT ? OFFSET ?;"
+        } else {
+            "SELECT * FROM users WHERE email LIKE ? OR role LIKE ? LIMIT ? OFFSET ?;"
+        }
+
+        connection.prepareStatement(querySQL).use { statement ->
+            if (search.isNullOrEmpty()) {
+                statement.setInt(1, limit)
+                statement.setInt(2, (page - 1) * limit)
+            } else {
+                val searchTerm = "%$search%"
+                statement.setString(1, searchTerm)
+                statement.setString(2, searchTerm)
+                statement.setInt(3, limit)
+                statement.setInt(4, (page - 1) * limit)
+            }
+
+            val resultSet = statement.executeQuery()
+            val users = mutableListOf<User>()
+            while (resultSet.next()) {
+                users.add(mapResultSetToUser(resultSet))
+            }
+
+            val countQuery = if (search.isNullOrEmpty()) {
+                "SELECT COUNT(*) FROM users;"
+            } else {
+                "SELECT COUNT(*) FROM users WHERE email LIKE ? OR role LIKE ?;"
+            }
+
+            val count = connection.prepareStatement(countQuery).use { countStatement ->
+                if (!search.isNullOrEmpty()) {
+                    countStatement.setString(1, "%$search%")
+                    countStatement.setString(2, "%$search%")
+                }
+                val countResultSet = countStatement.executeQuery()
+                countResultSet.next()
+                countResultSet.getInt(1)
+            }
+
+            val totalPages = if (count % limit == 0) count / limit else count / limit + 1
+            return GetUsersResponse(data = users, totalPages = totalPages)
         }
     }
 }

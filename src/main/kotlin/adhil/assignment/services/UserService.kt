@@ -53,5 +53,9 @@ class UserService {
         val token = TableAccessToken().createAccessToken(user.id)
         return SigninResponse(token = token)
     }
+
+    fun getUsers(page: Int, limit: Int, search: String?): GetUsersResponse {
+        return TableUser().getUsers(page, limit, search)
+    }
 }
 

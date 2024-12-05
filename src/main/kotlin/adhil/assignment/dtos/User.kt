@@ -1,5 +1,7 @@
 package adhil.assignment.dtos
 
+import adhil.assignment.modals.User
+
 data class SignUpRequest(
     val email: String,
     val password: String,
@@ -26,4 +28,9 @@ data class SigninResponse(
 
 data class ResendVerificationResponse(
     val message: String = "Verification email sent successfully."
+)
+
+data class GetUsersResponse(
+    val data: List<User>,
+    val totalPages: Int
 )
