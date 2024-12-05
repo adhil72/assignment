@@ -21,6 +21,7 @@ class TableCourses {
                 title VARCHAR(255) NOT NULL,
                 description TEXT NOT NULL,
                 price NUMERIC NOT NULL,
+                orderCount INT DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 created_by VARCHAR(255) NOT NULL
             )
@@ -68,7 +69,8 @@ class TableCourses {
                     description = resultSet.getString("description"),
                     price = resultSet.getDouble("price"),
                     createdAt = resultSet.getString("created_at"),
-                    createdBy = null
+                    createdBy = null,
+                    orderCount = resultSet.getInt("orderCount")
                 )
             )
         }
@@ -127,7 +129,8 @@ class TableCourses {
                     description = resultSet.getString("description"),
                     price = resultSet.getDouble("price"),
                     createdAt = resultSet.getString("created_at"),
-                    createdBy = null
+                    createdBy = null,
+                    orderCount = resultSet.getInt("orderCount")
                 )
             )
         }
@@ -145,6 +148,55 @@ class TableCourses {
         preparedStatement.setString(1, startDate)
         preparedStatement.setString(2, endDate)
         return preparedStatement.executeQuery().getInt("total")
+    }
+
+    fun incrementCourseBuyCount(courseId: String) {
+        val sql = """
+            UPDATE courses SET orderCount = orderCount + 1 WHERE id = ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, courseId)
+        preparedStatement.executeUpdate()
+    }
+
+    fun getCreatorCourses(userId: String): GetCoursesResponse {
+        val sql = """
+            SELECT * FROM courses WHERE created_by = ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, userId)
+        val resultSet = preparedStatement.executeQuery()
+        val courses = mutableListOf<Course>()
+        while (resultSet.next()) {
+            courses.add(
+                Course(
+                    id = resultSet.getString("id"),
+                    title = resultSet.getString("title"),
+                    description = resultSet.getString("description"),
+                    price = resultSet.getDouble("price"),
+                    createdAt = resultSet.getString("created_at"),
+                    createdBy = null,
+                    orderCount = resultSet.getInt("orderCount")
+                )
+            )
+        }
+        return GetCoursesResponse(courses, 1)
+    }
+
+    fun getCoursesCountByCreator(userId: String, startDate: String, endDate: String): Int {
+        val sql = """
+            SELECT COUNT(*) as total FROM courses WHERE created_by = ? AND created_at BETWEEN ? AND ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, userId)
+        preparedStatement.setString(2, startDate)
+        preparedStatement.setString(3, endDate)
+        return preparedStatement.executeQuery().getInt("total")
+    }
+
+    fun getCoursesCountByCustomer(userId: String, startDate: String, endDate: String): Int {
+        val user = TableUser().getUserById(userId)
+        return user.courses.split(",").size
     }
 
 }

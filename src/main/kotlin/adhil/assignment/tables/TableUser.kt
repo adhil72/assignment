@@ -23,7 +23,8 @@ class TableUser {
                 password TEXT NOT NULL,
                 role TEXT NOT NULL,
                 courses TEXT DEFAULT '',
-                verified BOOLEAN DEFAULT FALSE
+                verified BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """.trimIndent()
 
@@ -174,6 +175,7 @@ class TableUser {
     }
 
     fun getCreatorsCount(startDate: String, endDate: String): Int {
+
         val querySQL = "SELECT COUNT(*) FROM users WHERE role = 'creator' AND created_at BETWEEN ? AND ?;"
         connection.prepareStatement(querySQL).use { statement ->
             statement.setString(1, startDate)

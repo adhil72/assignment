@@ -7,10 +7,11 @@ data class Course(
     val title: String,
     val description: String,
     val price: Double,
+    val orderCount: Int,
     val createdAt: String,
     val createdBy: String?
 ) {
-    constructor(title: String, description: String, price: Double, createdBy: String) : this(UUID.randomUUID().toString(), title, description, price, "",createdBy){
+    constructor(title: String, description: String, price: Double, createdBy: String) : this(UUID.randomUUID().toString(), title, description, price,0, "",createdBy){
 
     }
 }

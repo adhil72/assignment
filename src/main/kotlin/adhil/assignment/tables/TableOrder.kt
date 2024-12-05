@@ -1,3 +1,5 @@
+package adhil.assignment.tables
+
 import adhil.assignment.config.DbConfig
 import adhil.assignment.dtos.GetOrderRequest
 import adhil.assignment.dtos.GetOrdersResponse
@@ -108,7 +110,7 @@ class TableOrder {
         preparedStatement.executeUpdate()
     }
 
-    fun getOrdersCount(startDate: String, endDate: String):Int {
+    fun getOrdersCount(startDate: String, endDate: String): Int {
         val sql = """
             SELECT * FROM orders WHERE created_at BETWEEN ? AND ?
         """.trimIndent()
@@ -131,5 +133,42 @@ class TableOrder {
             )
         }
         return orders.size
+    }
+
+    fun getOrdersCountByCreator(userId: String, startDate: String, endDate: String): Int {
+        val courses = TableCourses().getCreatorCourses(userId)
+        val courseIds = courses.data.map { it.id }
+        if (courseIds.isEmpty()) {
+            return 0
+        }
+        val placeholders = courseIds.joinToString(",") { "?" }
+        val sql = """
+            SELECT COUNT(*) FROM orders WHERE course_id IN ($placeholders) AND created_at BETWEEN ? AND ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        courseIds.forEachIndexed { index, courseId ->
+            preparedStatement.setString(index + 1, courseId)
+        }
+        preparedStatement.setString(courseIds.size + 1, startDate)
+        preparedStatement.setString(courseIds.size + 2, endDate)
+        val resultSet = preparedStatement.executeQuery()
+        resultSet.next()
+        return resultSet.getInt(1)
+    }
+
+    fun getOrdersCountByCustomer(userId: String, startDate: String, endDate: String): Int {
+        val sql = """
+            SELECT * FROM orders WHERE user_id = ? AND created_at BETWEEN ? AND ?
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, userId)
+        preparedStatement.setString(2, startDate)
+        preparedStatement.setString(3, endDate)
+        val resultSet = preparedStatement.executeQuery()
+        var orders = 0
+        while (resultSet.next()) {
+            orders++
+        }
+        return orders
     }
 }
