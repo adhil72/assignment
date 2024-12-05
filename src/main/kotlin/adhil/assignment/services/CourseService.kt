@@ -9,19 +9,13 @@ import adhil.assignment.tables.TableCourses
 import javax.servlet.http.HttpServletRequest
 
 class CourseService {
-
-
-    fun getAllCourses(getCourseRequest: GetCourseRequest): GetCoursesResponse {
-        return TableCourses().getAllCourses(getCourseRequest)
-    }
-
     fun getCreatorCourses(request: HttpServletRequest, limit: Int, page: Int): GetCoursesResponse {
-        val userId = request.getAttribute("userId") as String
+        val userId = request.getAttribute("uid") as String
         return TableCourses().getCreatorCourses(userId, limit, page)
     }
 
-    fun createCourse(request: HttpServletRequest, createCourseRequest: CreateCourseRequest):CreateCourseResponse {
-        val userId = request.getAttribute("id") as String
+    fun createCourse(request: HttpServletRequest, createCourseRequest: CreateCourseRequest): CreateCourseResponse {
+        val userId = request.getAttribute("uid") as String
         val course = Course(
             title = createCourseRequest.title,
             description = createCourseRequest.description,
@@ -29,6 +23,10 @@ class CourseService {
             createdBy = userId
         )
         return TableCourses().insertCourse(course)
+    }
+
+    fun getAllCourses(getCourseRequest: GetCourseRequest): GetCoursesResponse {
+        return TableCourses().getAllCourses(getCourseRequest)
     }
 
 }

@@ -21,6 +21,7 @@ class TableUser {
                 email TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
                 role TEXT NOT NULL,
+                courses TEXT DEFAULT '',
                 verified BOOLEAN DEFAULT FALSE
             );
         """.trimIndent()
@@ -111,5 +112,17 @@ class TableUser {
             }
         }
         throw Exception("User not found")
+    }
+
+    fun addCourse(courseId: String) {
+        val user = getUserById("1")
+        val courses = user.courses.split(",").toMutableList()
+        courses.add(courseId)
+        val updateSQL = "UPDATE users SET courses = ? WHERE id = ?;"
+        connection.prepareStatement(updateSQL).use { statement ->
+            statement.setString(1, courses.joinToString(","))
+            statement.setString(2, "1")
+            statement.executeUpdate()
+        }
     }
 }
