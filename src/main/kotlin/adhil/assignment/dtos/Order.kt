@@ -15,7 +15,7 @@ data class GetOrdersResponse(
 data class CreateOrderResponse(
     val data: Order?=null,
     val message: String = "Order created successfully",
-    val paymentUrl: String?=null
+    val callbackUrl: String?=null
 )
 
 data class CreateOrderRequest(

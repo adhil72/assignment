@@ -7,6 +7,10 @@ import java.time.format.DateTimeFormatter
 class TableOrder {
     val connection = DbConfig.connection
 
+    init {
+        createTable()
+    }
+
     fun createTable() {
         val sql = """
             CREATE TABLE IF NOT EXISTS orders (
@@ -14,7 +18,7 @@ class TableOrder {
                 course_id VARCHAR(255) NOT NULL,
                 user_id VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                payment_status BOOLEAN DEFAULT FALSE
+                payment_status BOOLEAN DEFAULT FALSE,
                 processing_status BOOLEAN DEFAULT TRUE
             )
         """.trimIndent()

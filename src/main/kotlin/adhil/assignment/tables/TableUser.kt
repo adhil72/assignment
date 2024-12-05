@@ -8,7 +8,7 @@ import java.sql.ResultSet
 class TableUser {
 
     val connection: Connection = DbConfig.connection
-    val roles = listOf("admin", "creator", "user")
+    val roles = listOf("admin", "creator", "customer")
 
     init {
         createTableIfNotExists()

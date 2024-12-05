@@ -3,6 +3,7 @@ package adhil.assignment.controllers
 import adhil.assignment.config.AppConfig
 import adhil.assignment.dtos.CreateOrderRequest
 import adhil.assignment.dtos.CreateOrderResponse
+import adhil.assignment.dtos.GetOrdersResponse
 import adhil.assignment.dtos.PaymentResponse
 import adhil.assignment.security.permissive
 import adhil.assignment.services.OrderService
@@ -19,19 +20,23 @@ class OrderController {
     @PostMapping("/create")
     fun createOrder(request: HttpServletRequest, @RequestParam courseId: String):CreateOrderResponse {
         permissive(listOf("customer"), request)
-        OrderService().createCourseOrder(request,courseId)
-        return CreateOrderResponse()
+        return OrderService().createCourseOrder(request,courseId)
     }
 
-    @GetMapping("/payment/success")
-    fun paymentSuccess(@RequestParam orderId: String): PaymentResponse {
-        OrderService().paymentSuccess(orderId)
-        return PaymentResponse("Payment Successful")
+    @GetMapping("/fetch")
+    fun getOrders(request: HttpServletRequest, @RequestParam(required = false) page:Int=1, @RequestParam(required = false) limit:Int=10): GetOrdersResponse {
+        permissive(listOf("customer"), request)
+        return OrderService().getOrdersByUserId(request,page,limit)
     }
 
-    @GetMapping("/payment/failure")
-    fun paymentFailure(@RequestParam orderId: String): PaymentResponse {
-        OrderService().paymentFailure(orderId)
-        return PaymentResponse("Payment Failed")
+    @GetMapping("/payment/callback")
+    fun paymentSuccess(@RequestParam orderId: String, @RequestParam success:Boolean): PaymentResponse {
+        if (success){
+            OrderService().paymentSuccess(orderId)
+            return PaymentResponse("Payment Successful")
+        }else{
+            OrderService().paymentFailure(orderId)
+            return PaymentResponse("Payment Failed")
+        }
     }
 }
