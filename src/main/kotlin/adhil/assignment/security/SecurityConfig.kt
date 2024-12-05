@@ -13,7 +13,6 @@ open class SecurityConfig {
     @Bean
     @Throws(Exception::class)
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        println("Security filter chain")
         http.csrf().disable().authorizeHttpRequests { auth ->
                 auth.requestMatchers(AntPathRequestMatcher("${AppConfig.BASE_PATH}/**")).permitAll()
                 .anyRequest().authenticated()
