@@ -1,5 +1,6 @@
 package adhil.assignment.security
 
+import adhil.assignment.exceptions.EmailVerificationException
 import adhil.assignment.tables.TableAccessToken
 import adhil.assignment.tables.TableUser
 import org.springframework.stereotype.Component
@@ -25,10 +26,11 @@ open class AuthenticationFilter: OncePerRequestFilter() {
             try {
                 token = token.substring(7)
                 val user = TableAccessToken().validateToken(token)
+                if(!user.verified) throw EmailVerificationException("Email not verified.")
                 request.setAttribute("uid", user.id)
                 request.setAttribute("email", user.email)
                 request.setAttribute("role", user.role)
-                request.setAttribute("verified", user.verified)
+                request.setAttribute("verified", true)
                 filterChain.doFilter(request, response)
             } catch (e: Exception) {
                 response.status = HttpServletResponse.SC_UNAUTHORIZED
