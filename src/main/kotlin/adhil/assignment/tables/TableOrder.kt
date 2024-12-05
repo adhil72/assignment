@@ -3,6 +3,7 @@ package adhil.assignment.tables
 import adhil.assignment.config.DbConfig
 import adhil.assignment.dtos.GetOrderRequest
 import adhil.assignment.dtos.GetOrdersResponse
+import adhil.assignment.exceptions.OrderException
 import adhil.assignment.modals.Order
 import java.time.format.DateTimeFormatter
 
@@ -171,5 +172,17 @@ class TableOrder {
             orders++
         }
         return orders
+    }
+
+    fun checkNoProcessingOrder(userId: String) {
+        val sql = """
+            SELECT * FROM orders WHERE user_id = ? AND processing_status = TRUE
+        """.trimIndent()
+        val preparedStatement = connection.prepareStatement(sql)
+        preparedStatement.setString(1, userId)
+        val resultSet = preparedStatement.executeQuery()
+        if (resultSet.next()) {
+            throw OrderException("User already has a processing order")
+        }
     }
 }

@@ -7,6 +7,7 @@ import adhil.assignment.modals.User
 import adhil.assignment.tables.TableAccessToken
 import adhil.assignment.tables.TableUser
 import adhil.assignment.tables.TableVerification
+import adhil.assignment.utils.validateEmail
 import adhil.assignment.utils.validatePassword
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.UUID
@@ -20,6 +21,7 @@ class UserService {
         if (userTable.exists(signupRequest.email)) throw UserAlreadyExistsException("User with email ${signupRequest.email} already exists.")
 
         validatePassword(signupRequest.password)
+        validateEmail(signupRequest.email)
         val user = User(
             email = signupRequest.email,
             password = passwordEncoder.encode(signupRequest.password),

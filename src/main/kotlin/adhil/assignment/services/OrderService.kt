@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest
 class OrderService {
     fun createCourseOrder(request: HttpServletRequest, courseId: String): CreateOrderResponse {
         val userId = request.getAttribute("uid") as String
+        TableOrder().checkNoProcessingOrder(userId)
         val userCourses = TableUser().getUserCourses(userId)
         if (userCourses.contains(courseId)) throw OrderException("User already has this course")
         val order = TableOrder().insertOrder(

@@ -6,7 +6,6 @@ import adhil.assignment.dtos.CreateCourseResponse
 import adhil.assignment.dtos.GetCoursesResponse
 import adhil.assignment.security.permissive
 import adhil.assignment.services.CourseService
-import adhil.assignment.utils.validateBody
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

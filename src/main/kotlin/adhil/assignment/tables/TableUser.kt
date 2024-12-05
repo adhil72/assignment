@@ -94,13 +94,14 @@ class TableUser {
         }
     }
 
-    private fun mapResultSetToUser(resultSet: ResultSet): User {
+    private fun mapResultSetToUser(resultSet: ResultSet, hidePassword: Boolean = false): User {
         return User(
             id = resultSet.getString("id"),
             email = resultSet.getString("email"),
-            password = resultSet.getString("password"),
+            password = if (!hidePassword) resultSet.getString("password") else "",
             role = resultSet.getString("role"),
-            verified = resultSet.getBoolean("verified")
+            verified = resultSet.getBoolean("verified"),
+            courses = resultSet.getString("courses"),
         )
     }
 
@@ -116,14 +117,14 @@ class TableUser {
         throw Exception("User not found")
     }
 
-    fun addCourse(courseId: String, userId:String) {
+    fun addCourse(courseId: String, userId: String) {
         val user = getUserById(userId)
         val courses = user.courses.split(",").toMutableList()
         courses.add(courseId)
         val updateSQL = "UPDATE users SET courses = ? WHERE id = ?;"
         connection.prepareStatement(updateSQL).use { statement ->
             statement.setString(1, courses.joinToString(","))
-            statement.setString(2, "1")
+            statement.setString(2, userId)
             statement.executeUpdate()
         }
     }
@@ -150,7 +151,7 @@ class TableUser {
             val resultSet = statement.executeQuery()
             val users = mutableListOf<User>()
             while (resultSet.next()) {
-                users.add(mapResultSetToUser(resultSet))
+                users.add(mapResultSetToUser(resultSet, true))
             }
 
             val countQuery = if (search.isNullOrEmpty()) {

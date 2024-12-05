@@ -36,3 +36,9 @@ class PasswordException(override val message: String): UserException(message) {
         return "PasswordException: $message"
     }
 }
+
+class EmailException(override val message: String): UserException(message) {
+    override fun toString(): String {
+        return "EmailException: $message"
+    }
+}
